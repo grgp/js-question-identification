@@ -103,8 +103,11 @@ function learnJSON() {
   // console.log("Total tweets: ", tweets.length)
 
   classifier = makeClassifier(tweets)
+  window.classifier = classifier
   return classifier
 }
+
+learnJSON()
 
 // classify(classifier, ["Utk harga yg tertera pada aplikasi adalah harga estimasi. Anda dapat membayarkan sesuai dgn struk yg diberikan. Tks ^yun",
 //                       "mbaa janeett.. nama bandara di korea selatan apa ya? @IndonesiaGaruda",
@@ -119,7 +122,7 @@ function learnJSON() {
 //                       ])
 
 // uncomment to run
-crossValidation(tweets)
+// crossValidation(tweets)
 },{"bayes":3,"fs":1}],3:[function(require,module,exports){
 /*
     Expose our naive-bayes generator function
