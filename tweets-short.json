@@ -1,0 +1,14 @@
+[
+  {
+    "tweet": "min mau tanya kalau saya mau nukerin free ride kan dapet ptgn 25rb itu bisa di pakai untk brp kali perjalanan yaa ? Mksh",
+    "class": "is_question"
+  },
+  {
+    "tweet": "Ucett dah pagi udah olahraga ngejar kreta 121)  https://path.com/p/2vGNoB",
+    "class": "is_not_question"
+  },
+  {
+    "tweet": "Penerbangan langsung Jakarta-Labuan Bajo menggunakan jenis pesawat CRK atau Bombardier. Terima kasih. -",
+    "class": "is_not_question"
+  }
+]

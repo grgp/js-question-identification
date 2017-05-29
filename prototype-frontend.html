@@ -1,0 +1,73 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Desatta</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vuefire/1.4.3/vuefire.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">-->
+    <link rel="stylesheet" href="flat-ui.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+  </head>
+  <body>
+    <div class="container" id="app">
+        <h1>Desatta: (Tweets Classifier)</h1>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">
+                Username</label>
+
+                <div class="col-sm-4">
+                <input placeholder="Enter Username..." type="text" class="form-control" value="starbucks" required>
+                
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">
+                Amount</label>
+
+                <div class="col-sm-2">
+                <input min=1 max=100 type="number" class="form-control" value=3>
+
+                </div>
+                <div class="col-sm-6">
+                <input class="btn btn-primary" type="submit" value="Get and Classify">
+                </div>
+            </div>
+            <input @input="update($event.target.value)" placeholder="edit me">
+            <p>Message is: {{ message }}</p>
+        </form>
+        <div class="col-sm-6" >
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Tweet</th>
+                    <th>Class</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Hanging out @Starbucks with my buddy @PeterSmithSings yesterday. #rockstar @TheHighKings @IrishSunOnline @irishdailymail @SunWorldShuffle</td>
+                    <td>is_not_question</td>
+                </tr>
+                <tr>
+                    <td>Something you don't hear every day: Guy standing in @Starbucks, shouting into his cell phone: "Where you at? I just got out of jail!"
+                    <td>is_not_question</td>
+                </tr>
+                <tr>
+                    <td>Just watched a barista @Starbucks wipe down tables and trash cans and then go back to making coffee without washing their hands #gross
+                    <td>is_complaint</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
