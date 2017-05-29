@@ -1,3 +1,22 @@
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
 function cleanTweet(tweet) {
     tweet = tweet.replace(/[0-9]/g, '')
     tweet = tweet.replace(/(@\S+)/gi,"")
@@ -37,10 +56,11 @@ function makeClassifier(tweets) {
 }
 
 function checkLabel(classifier, testing_array) {
-    var tp = 0, fp = 0, fn = 0, tn = 0, tot = 0
+    var tp = 0, fp = 0, fn = 0, tn = 0, tot = 0, is_question = 0, is_not_question = 0, is_complaint = 0
     
     for (let t of testing_array) {
-        var predicted = classifier.categorize(""+t.tweet)
+        var result = classifier.categorize(""+t.tweet)
+        var predicted = result.predicted
         if (predicted == t.class && (predicted == "is_question" || predicted == "is_complaint")) {
             tp++
         } else if (predicted == "is_question" || predicted == "is_complaint") {
@@ -50,23 +70,31 @@ function checkLabel(classifier, testing_array) {
         } else {
             tn++
         }
+
+        if (t.class == 'is_question') is_question++;
+        if (t.class == 'is_not_question') is_not_question++;
+        if (t.class == 'is_complaint') is_complaint++;
+
         tot++
     }
 
-    console.log("TP: " + (tp/tot).toFixed(3) + " || FP: " + (fp/tot).toFixed(3) + " || FN: " + (fn/tot).toFixed(3) + " || TN: " + (tn/tot).toFixed(3) + " || Total: " + tot)
+    console.log("TP: " + (tp/tot).toFixed(3) + " || FP: " + (fp/tot).toFixed(3) + " || FN: " + (fn/tot).toFixed(3) + " || TN: " + (tn/tot).toFixed(3) + " || Accuracy: " + ((tp+tn)/tot).toFixed(2) + " || Total: " + tot)
+    console.log("    is_question: " + is_question + " || is_not_question: " + is_not_question + " || is_complaint: " + is_complaint)
 }
 
 function crossValidation(tweets) {
-    var i, j, temparray, chunksize = tweets.length/5;
+    tweets = shuffle(tweets)
+    var folds = 5;
+    var i, j, temparray, chunksize = tweets.length/folds;
     var chunks = []
     for (i = 0, j = tweets.length; i < j; i += chunksize) {
         temparray = tweets.slice(i,i+chunksize)
         chunks.push(temparray)
     }
 
-    for (k = 0; k < 5; k++) {
+    for (k = 0; k < folds; k++) {
         var training_array = []
-        for (m = 0; m < 5; m++) {
+        for (m = 0; m < folds; m++) {
             if (m != k) {
                 // training_array.concat(chunks[m])
                 training_array = chunks[m]
@@ -82,14 +110,12 @@ function crossValidation(tweets) {
 function classify(classifier, sentences) {
     for (let sentence of sentences) {
         console.log("Sentence:", sentence)
-        console.log("   > Class:", classifier.categorize(sentence))
+        console.log("   > Class:", classifier.categorize(sentence).probabilities)
     }
 }
 
 var fs = require('fs');
 var tweets = JSON.parse(fs.readFileSync('tweets-2cols.json', 'utf8'));
-
-// console.log("Total tweets: ", tweets.length)
 
 classifier = makeClassifier(tweets)
 
@@ -98,16 +124,14 @@ classifier = makeClassifier(tweets)
 //                       "@CommuterLine malam . Sya mau tnya apakah ada batasan waktu untuk mengambil uang jaminan tiket kreta harian berjamin ???",
 //                       "@CommuterLine loopline 8.15 ber jng tp skrng masih di pse? Whyyy????",
 //                       "@KAI121 pegawai tsb pindah stlh CSOT tanya ke penumpang sblh nya apa bangku 4B kosong? selepas Semarang baru duduk di 4B https://twitter.com/agungbjn/status/863776416608927744",
-//                       "Informasi lebih lanjut terkait pembatalan tiket kami sampaikan via Direct Message. Tiket Infant penumpang anak berusia 3 tahun |1"
+//                       "Informasi lebih lanjut terkait pembatalan tiket kami sampaikan via Direct Message. Tiket Infant penumpang anak berusia 3 tahun |1",
+//                       "terimakasih mas robby atas responnya...sukses selalu utk @indonesiaGaruda salam kenal kami dari Triwarsana Academy...",
+//                       "check in dulu di kiosk lalu bagasi di antar ke counter yaaa",
+//                       "min promo mudik garuda itu untuk dapat tambahan cashback menggunakan bank apa ya untuk pembayaran?",
+//                       "Subclass H, tapi belum saya cek di akub garuda miles belum bertambah"
 //                       ])
 
-// // uncomment to run
-// crossValidation(tweets)
-// var express = require('express')
-// var app = express()
+// classify(classifier, ["Apa?", "Ini batu", "Batu apa?", "Garuda Indonesia terbaik", "Beli starbucks hari ini dong"])
 
-// app.listen(3000, function () {
-//   console.log('Example app listening on port 3000!')
-// })
-
-// app.use(express.static('.'))
+// // // uncomment to run
+crossValidation(tweets)
