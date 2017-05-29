@@ -1,3 +1,23 @@
+// Fischer-Yates
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
 function cleanTweet(tweet) {
     tweet = tweet.replace(/[0-9]/g, '')
     tweet = tweet.replace(/(@\S+)/gi,"")
@@ -40,7 +60,8 @@ function checkLabel(classifier, testing_array) {
     var tp = 0, fp = 0, fn = 0, tn = 0, tot = 0
     
     for (let t of testing_array) {
-        var predicted = classifier.categorize(""+t.tweet)
+        var result = classifier.categorize(""+t.tweet)
+        var predicted = result.predicted
         if (predicted == t.class && (predicted == "is_question" || predicted == "is_complaint")) {
             tp++
         } else if (predicted == "is_question" || predicted == "is_complaint") {
@@ -53,20 +74,22 @@ function checkLabel(classifier, testing_array) {
         tot++
     }
 
-    console.log("TP: " + (tp/tot).toFixed(3) + " || FP: " + (fp/tot).toFixed(3) + " || FN: " + (fn/tot).toFixed(3) + " || TN: " + (tn/tot).toFixed(3) + " || Total: " + tot)
+    console.log("TP: " + (tp/tot).toFixed(3) + " || FP: " + (fp/tot).toFixed(3) + " || FN: " + (fn/tot).toFixed(3) + " || TN: " + (tn/tot).toFixed(3) + " || Accuracy: " + ((tp+tn)/tot).toFixed(3) + " || Total: " + tot)
 }
 
 function crossValidation(tweets) {
-    var i, j, temparray, chunksize = tweets.length/5;
+    tweets = shuffle(tweets)
+    var numchunks = 5
+    var i, j, temparray, chunksize = tweets.length/numchunks;
     var chunks = []
     for (i = 0, j = tweets.length; i < j; i += chunksize) {
         temparray = tweets.slice(i,i+chunksize)
         chunks.push(temparray)
     }
 
-    for (k = 0; k < 5; k++) {
+    for (k = 0; k < numchunks; k++) {
         var training_array = []
-        for (m = 0; m < 5; m++) {
+        for (m = 0; m < numchunks; m++) {
             if (m != k) {
                 // training_array.concat(chunks[m])
                 training_array = chunks[m]
@@ -102,12 +125,4 @@ classifier = makeClassifier(tweets)
 //                       ])
 
 // // uncomment to run
-// crossValidation(tweets)
-// var express = require('express')
-// var app = express()
-
-// app.listen(3000, function () {
-//   console.log('Example app listening on port 3000!')
-// })
-
-// app.use(express.static('.'))
+crossValidation(tweets)
